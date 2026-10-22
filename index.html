@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盖一下</title>
+    <link rel="icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23181916'/%3E%3Cpath d='M11 13V8a4 4 0 0 1 8 0v5M7 17h18v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3v-2zM6 22h20' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800;900&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    
+    <style>
+        :root {
+            --ink: #181916;
+            --paper: #f8f4e6;
+            --cream: #eee2aa;
+            --cream-light: #f5edc9;
+            --card: #fffdf5;
+            --muted: #777568;
+            --line: #23241f;
+            --red: #d34d50;
+            --sage: #a9b1a2;
+            --shadow: 5px 6px 0 var(--ink);
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Noto Sans SC", sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+        button, input { font: inherit; }
+        button { color: inherit; transition: background .15s, color .15s, transform .15s; cursor: pointer; }
+        button:hover { filter: brightness(.97); }
+        .icon { flex: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+        .app-shell { min-height: 100vh; background-image: radial-gradient(#18191610 0.7px, transparent 0.7px); background-size: 6px 6px; }
+
+        .topbar { align-items: center; background: var(--cream); border-bottom: 2px solid var(--line); display: flex; height: 78px; justify-content: space-between; padding: 0 5vw; position: sticky; top: 0; z-index: 30; }
+        .brand { align-items: center; display: flex; gap: 11px; }
+        .brand-mark { align-items: center; background: var(--ink); color: var(--cream); display: flex; height: 42px; justify-content: center; transform: rotate(-3deg); width: 42px; border-radius: 10px; }
+        .brand strong { display: block; font-family: "Noto Serif SC", serif; font-size: 22px; line-height: 1; }
+        .brand small { display: block; font-size: 8px; font-weight: 800; letter-spacing: .14em; margin-top: 5px; }
+        
+        .steps { align-items: center; display: flex; gap: 13px; }
+        .steps span { align-items: center; color: #77735f; display: flex; font-size: 12px; font-weight: 700; gap: 6px; white-space: nowrap; transition: 0.3s; }
+        .steps b { align-items: center; border: 1.5px solid currentColor; border-radius: 50%; display: flex; height: 23px; justify-content: center; width: 23px; transition: 0.3s;}
+        .steps span.active { color: var(--ink); }
+        .steps span.active b { background: var(--ink); color: var(--cream); }
+        .steps i { background: #898570; height: 1px; width: 42px; }
+
+        .header-actions { display: flex; gap: 9px; }
+        .dark-button { align-items: center; border: 1.5px solid var(--ink); display: flex; font-size: 12px; font-weight: 700; gap: 7px; height: 40px; padding: 0 16px; background: var(--ink); color: white; }
+        .export-menu { position: relative; }
+        .export-popover { background: var(--card); border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); display: none; min-width: 100%; padding: 5px; position: absolute; right: 0; top: 44px; z-index: 10; }
+        .export-menu:hover .export-popover, .export-menu:focus-within .export-popover { display: grid; }
+        .export-popover button { background: transparent; border: 0; font-size: 12px; padding: 9px 12px; text-align: left; white-space: nowrap; }
+        .export-popover button:hover { background: var(--cream-light); }
+
+        main { margin: auto; max-width: 1440px; padding: 56px 5vw 70px; }
+        .hero-copy { align-items: end; display: flex; justify-content: space-between; margin-bottom: 35px; }
+        .eyebrow { align-items: center; display: flex; font-size: 11px; font-weight: 800; gap: 6px; letter-spacing: .17em; margin-bottom: 14px; }
+        h1, h2, p { margin: 0; }
+        h1 { font-family: "Noto Serif SC", serif; font-size: clamp(38px, 4vw, 62px); letter-spacing: -.06em; line-height: 1.1; }
+        h1 em { color: var(--red); font-style: normal; position: relative; }
+        h1 em:after { background: var(--red); bottom: -8px; content: ""; height: 3px; left: 2%; position: absolute; transform: rotate(-1deg); width: 96%; }
+        .hero-copy > p { color: var(--muted); font-size: 16px; font-weight: 700; letter-spacing: 2px; line-height: 1.9; text-align: right; }
+
+        .maker-grid { display: grid; gap: 22px; grid-template-columns: minmax(0, 2.2fr) minmax(260px, .8fr); }
+        .panel { background: var(--card); border: 2px solid var(--line); box-shadow: var(--shadow); }
+        .draw-panel { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+        .panel-heading, .workspace-title { align-items: center; display: flex; justify-content: space-between; }
+        .panel-heading > div, .workspace-title > div:first-child { align-items: center; display: flex; gap: 14px; }
+        .number { align-items: center; background: var(--cream); border: 1.5px solid var(--ink); display: flex; font-family: "Noto Serif SC", serif; font-size: 15px; font-weight: 900; height: 38px; justify-content: center; transform: rotate(-3deg); width: 38px; }
+        .panel-heading h2, .workspace-title h2 { font-family: "Noto Serif SC", serif; font-size: 20px; line-height: 1.2; }
+        .panel-heading p, .workspace-title p { color: var(--muted); font-size: 11px; margin-top: 4px; }
+        
+                /* 改动 1：在末尾加上了 margin-right: 20px; （数字越大越靠左） */
+        .status-dot { color: #5c6658; font-size: 10px; font-weight: 700; margin-right: 8px; }
+        
+        /* 改动 2：把原来的 margin-right: 7px; 改成了 3px; （数字越小，灯和字贴得越紧） */
+        .status-dot:before { background: #34c759; border-radius: 50%; content: ""; display: inline-block; height: 7px; margin-right: 3px; width: 7px; animation: breath 1.5s infinite ease-in-out; }
+        @keyframes breath { 0% { opacity: 0.4; box-shadow: 0 0 0 0 rgba(103, 119, 96, 0.7); } 50% { opacity: 1; box-shadow: 0 0 0 5px rgba(103, 119, 96, 0); } 100% { opacity: 0.4; box-shadow: 0 0 0 0 rgba(103, 119, 96, 0); } }
+
+        .drawing-layout { display: grid; gap: 20px; grid-template-columns: 1fr 180px; }
+        .tool-row { align-items: center; display: flex; justify-content: space-between; margin-bottom: 9px; }
+        .tool-group { display: flex; gap: 4px; }
+        .tool-group button { align-items: center; background: transparent; border: 1.5px solid transparent; display: flex; height: 32px; justify-content: center; width: 32px; }
+        .tool-group button:hover, .tool-group button.selected { background: var(--cream); border-color: var(--ink); }
+        .tool-group span { background: #d2cfc2; margin: 5px 4px; width: 1px; }
+        
+        .brush-control { align-items: center; color: var(--muted); display: flex; font-size: 10px; font-weight: 700; gap: 6px; }
+        input[type="range"] { accent-color: var(--ink); height: 3px; }
+        .brush-control b { color: var(--ink); min-width: 18px; }
+        
+        .drawing-paper { background-color: #f5f1e5; background-image: linear-gradient(#dad5c4 1px, transparent 1px), linear-gradient(90deg, #dad5c4 1px, transparent 1px); background-size: 24px 24px; border: 1.5px solid var(--ink); height: 380px; overflow: hidden; position: relative; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23181916" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 3 7 7-9.5 9.5a4.95 4.95 0 0 1-7-7L14 3Zm-8.5 8.5 7 7M4 21c2.5 0 4-1.2 4-3"/></svg>') 0 24, auto; }
+        .drawing-paper.eraser { cursor: cell; }
+        .drawing-paper canvas { height: 100%; touch-action: none; width: 100%; }
+        .paper-note { background: var(--ink); bottom: 0; color: white; font-size: 8px; letter-spacing: .12em; padding: 4px 8px; pointer-events: none; position: absolute; right: 0; }
+
+        .preview-column { border-left: 1px dashed #aaa694; padding-left: 20px; display: flex; flex-direction: column;}
+        .preview-label { align-items: center; display: flex; font-size: 10px; font-weight: 800; gap: 5px; letter-spacing: .1em; }
+        .seal-preview { align-items: center; background: var(--cream-light); border: 1.5px solid var(--ink); display: flex; height: 142px; justify-content: center; margin: 10px 0 15px; position: relative; }
+        .seal-preview:before { border: 1px dashed #878370; border-radius: 50%; content: ""; height: 112px; position: absolute; width: 112px; }
+        .seal-preview canvas { height: 100px; position: relative; width: 100px; z-index: 1; }
+        
+        .slider-group { margin-bottom: 10px; }
+        .slider-group label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; font-weight: 700;}
+        .color-picker-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .color-picker-wrapper label { font-size: 11px; font-weight: 700;}
+        input[type="color"] { flex: 1; height: 26px; border: 1px solid #979486; border-radius: 0; cursor: pointer; background: transparent; padding: 0; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; }
+
+        .action-row { display: flex; gap: 8px; flex-wrap: wrap; border-top: 1px dashed #d8d4c8; padding-top: 15px; }
+        .btn-upload { flex: 1; min-width: 100px; padding: 8px; font-size: 11px; border: 1.5px solid var(--ink); font-weight: 700; text-align: center; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .btn-upload:hover { filter: brightness(0.95); }
+        .btn-upload.purple { background: #9B8AA6; color: white; }
+        .btn-upload.red { background: var(--red); color: white; }
+        .btn-upload.yellow { background: var(--cream); color: var(--ink); }
+        
+        .btn-confirm { width: 100%; padding: 12px; background: var(--ink); color: white; border: none; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; margin-top: 5px; border: 1.5px solid var(--ink); box-shadow: 3px 3px 0 rgba(0,0,0,0.2); transition: 0.2s; }
+        .btn-confirm:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(0,0,0,0.2); }
+
+        .library-panel { min-height: 530px; padding: 24px 20px; display: flex; flex-direction: column; }
+        
+        /* ==== 折叠面板 ==== */
+        .accordion-item { margin-top: 15px; }
+        .accordion-header {
+            width: 100%; background: var(--ink); color: white; border: 1.5px solid var(--ink);
+            padding: 12px 15px; font-weight: 800; font-size: 14px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .accordion-header:hover { filter: brightness(1.1); }
+        .accordion-header.active { background: var(--cream); color: var(--ink); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-content.active { max-height: 850px; transition: max-height 0.3s ease-in; padding-top: 12px; }
+
+        .shelf-title { align-items: center; display: flex; gap: 9px; margin: 14px 0 10px; }
+        .shelf-title span { font-size: 10px; font-weight: 800; letter-spacing: .1em; white-space: nowrap; }
+        .shelf-title i { border-top: 1px dashed #b9b5a8; width: 100%; }
+        
+        .object-grid, .preset-grid { display: grid; gap: 8px; grid-template-columns: repeat(2, 1fr); }
+        .object-card, .preset-card { background: #f4f0e4; border: 1.5px solid transparent; min-width: 0; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .object-card.active, .preset-card.active { background: var(--cream-light); border-color: var(--ink); }
+        .object-card b { display: block; font-size: 10px; margin-top: 6px; }
+        
+        .stamp-object { background: linear-gradient(145deg, #e9dec4, #8d7552); border: 1px solid var(--ink); border-radius: 50% 50% 35% 35%; box-shadow: inset -6px -4px 0 #0002, 2px 3px 0 #1b1b18; display: inline-block; height: 50px; padding-top: 16px; position: relative; width: 44px; }
+        .stamp-object:before { background: inherit; border: 1px solid var(--ink); border-radius: 45%; content: ""; height: 22px; left: 13px; position: absolute; top: -7px; width: 18px; }
+        .stamp-object i { background: #9f3b2d; border: 1px solid var(--ink); color: #f8e9c4; display: block; font-family: serif; font-size: 12px; font-style: normal; height: 26px; line-height: 24px; margin: auto; width: 27px; text-align: center; }
+        .stamp-object.jade { background: linear-gradient(145deg, #d8e1c9, #647661); }
+        .stamp-object.plum { background: linear-gradient(145deg, #ecc9c3, #a35b57); }
+        .stamp-object.cat { background: linear-gradient(145deg, #e8d6ac, #8f7754); }
+        .stamp-object.classic { background: linear-gradient(145deg, #d2d2cc, #6b6b67); }
+
+        .preset-card { min-height: 84px; }
+        .preset-card span, .preset-card img { align-items: center; color: var(--red); display: flex; font-family: "Noto Serif SC", serif; font-size: 14px; font-weight: 900; height: 48px; justify-content: center; margin: auto; object-fit: contain; width: 48px; }
+        .preset-card small { display: block; font-size: 9px; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; text-align: center;}
+        
+        .seal-square { border: 3px double var(--red); }
+        .seal-round { border: 3px double var(--red); border-radius: 50%; font-size: 22px !important; }
+        .seal-burst { border: 2px dashed var(--red); border-radius: 50%; font-size: 10px !important; transform: rotate(-5deg); }
+        .seal-wide { border-bottom: 2px solid var(--red); font-size: 8px !important; }
+
+        /* ==== 旋转与大小拉杆 ==== */
+        .rotation-controls { margin-top: 15px; background: #f4f0e4; padding: 10px; border: 1.5px dashed #b9b5a8; }
+        .rotation-slider-group { margin-bottom: 8px; }
+        .rotation-slider-group:last-child { margin-bottom: 0; }
+        .rotation-slider-group label { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 3px; }
+        /* ========================== */
+
+        .workspace-section { margin-top: 62px; }
+        .workspace-title { margin-bottom: 20px; }
+        .workspace-tools { display: flex; gap: 7px; flex-wrap: wrap;}
+        .workspace-tools button { align-items: center; background: var(--card); border: 1.5px solid var(--ink); display: flex; font-size: 10px; font-weight: 700; gap: 6px; height: 36px; padding: 0 11px; }
+        
+        .photo-workspace { background: #22231f; border: 2px solid var(--ink); box-shadow: var(--shadow); display: flex; height: 620px; overflow: hidden; position: relative; }
+        .photo-workspace:before { background-image: radial-gradient(#fff2 1px, transparent 1px); background-size: 10px 10px; content: ""; inset: 0; pointer-events: none; position: absolute; }
+        #three-canvas-container { width: 100%; height: 100%; cursor: crosshair; z-index: 1; }
+        
+        .canvas-meta { align-items: center; color: #ede8d4; display: flex; font-size: 9px; gap: 8px; left: 17px; position: absolute; top: 16px; z-index: 2; pointer-events: none;}
+        .canvas-meta i { background: #77776e; height: 12px; width: 1px; }
+        .workspace-hint { align-items: center; background: var(--cream); border: 1.5px solid var(--ink); bottom: 18px; display: flex; font-size: 9px; gap: 8px; left: 50%; padding: 8px 12px; position: absolute; transform: translateX(-50%); z-index: 2; pointer-events: none; }
+        .workspace-hint span { display: flex; gap: 7px; white-space: nowrap; }
+
+        /* ==== 新增页脚样式 ==== */
+        footer { 
+            align-items: center; 
+            background: var(--cream); 
+            border-top: 2px solid var(--line); 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 20px 5vw; 
+            margin-top: 50px;
+        }
+        .brand.mini .brand-mark { font-size: 15px; height: 30px; width: 30px; border-radius: 6px;}
+        .brand.mini strong { font-size: 16px; }
+        
+        .footer-center {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+             transform: translateX(50px); /* 新增这行，如果偏右就加负数，偏左就加正数 */
+        }
+        .footer-center p { font-family: "Noto Serif SC", serif; font-size: 14px; font-weight: 700; margin: 0;}
+        .footer-links { display: flex; gap: 8px; font-size: 11px; color: var(--muted); font-weight: 500;}
+        .footer-links a { color: var(--muted); text-decoration: none; transition: 0.2s; cursor: pointer;}
+        .footer-links a:hover { color: var(--ink); text-decoration: underline; }
+        
+        /* 胶囊计数器 */
+        .footer-stats {
+            display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+            background: #fffdf5;
+            border: 1.5px solid var(--ink);
+            border-radius: 30px;
+            font-size: 11px; font-weight: 800; letter-spacing: 0.05em; color: var(--ink);
+            box-shadow: 2px 2px 0 var(--ink);
+        }
+        .breathing-dot {
+            width: 10px; height: 10px; background-color: #34c759;
+            border-radius: 3px; animation: greenBreath 1.5s infinite alternate ease-in-out;
+        }
+        @keyframes greenBreath {
+            from { opacity: 0.4; box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.7); }
+            to { opacity: 1; box-shadow: 0 0 0 6px rgba(52, 199, 89, 0); }
+        }
+
+        /* ==== 新增：复古弹窗 ==== */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(24, 25, 22, 0.6); backdrop-filter: blur(4px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10000; opacity: 0; pointer-events: none; transition: 0.2s;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+
+        .modal-paper {
+            width: 90%; max-width: 500px; background: var(--paper);
+            border: 2px solid var(--ink); border-radius: 4px;
+            box-shadow: 8px 8px 0 var(--ink);
+            position: relative; padding: 24px;
+            transform: translateY(20px) scale(0.95); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; max-height: 80vh;
+        }
+        .modal-overlay.show .modal-paper { transform: translateY(0) scale(1); }
+
+        .paper-dashed-border {
+            position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 1.5px dashed #aaa694; border-radius: 2px; pointer-events: none;
+        }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--line);
+            position: relative; z-index: 1;
+        }
+        .modal-header h2 { font-family: "Noto Serif SC", serif; font-size: 20px; font-weight: 900; margin: 0;}
+        .modal-close {
+            background: transparent; border: none; font-size: 16px; font-weight: bold; cursor: pointer;
+            width: 30px; height: 30px; border-radius: 50%; transition: 0.2s; display: flex; justify-content: center; align-items: center;
+        }
+        .modal-close:hover { background: var(--cream); color: var(--red); }
+
+        .modal-body {
+            font-size: 13px; line-height: 1.8; color: #333;
+            overflow-y: auto; padding-right: 10px; margin-bottom: 20px;
+            position: relative; z-index: 1; flex: 1;
+        }
+        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar-track { background: #e5e0d0; border-radius: 3px; }
+        .modal-body::-webkit-scrollbar-thumb { background: #b9b5a8; border-radius: 3px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: var(--ink); }
+        .modal-body p { margin-bottom: 10px;}
+
+        .modal-footer { text-align: right; position: relative; z-index: 1; }
+        .modal-footer .btn-confirm { width: auto; display: inline-block; padding: 10px 24px; margin-top: 0;}
+
+        /* 小提示：让 footer 在移动端适配 */
+        @media (max-width: 768px) {
+            footer { flex-direction: column; gap: 20px; text-align: center; }
+            .footer-stats { align-self: center; }
+        }
+
+        .toast { align-items: center; background: var(--cream); border: 2px solid var(--ink); bottom: 22px; box-shadow: 4px 4px 0 var(--ink); display: none; font-size: 12px; font-weight: 700; gap: 8px; left: 50%; padding: 12px 18px; position: fixed; transform: translateX(-50%); z-index: 50; }
+        .toast.show { display: flex; }
+
+        #recording-indicator { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: var(--ink); color: white; padding: 14px 28px; border-radius: 40px; font-size: 14px; font-weight: 700; display: none; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); cursor: pointer; z-index: 1000; border: 2px solid white; transition: 0.2s; }
+        #recording-indicator:hover { filter: brightness(1.2); }
+        #recording-indicator.show { display: flex; }
+        .red-dot { width: 12px; height: 12px; background-color: #ff3b30; border-radius: 50%; animation: redBreath 1s infinite alternate; }
+        @keyframes redBreath { from { opacity: 0.5; transform: scale(0.8); box-shadow: 0 0 0 0 rgba(255,59,48,0.7); } to { opacity: 1; transform: scale(1.2); box-shadow: 0 0 0 6px rgba(255,59,48,0); } }
+
+        #countdown-overlay {
+            position: absolute; inset: 0; z-index: 999;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        }
+        #countdown-overlay.show { opacity: 1; pointer-events: auto; }
+        #countdown-text {
+            font-size: 120px; font-weight: bold; color: white;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            animation: pop 1s ease-out infinite;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; } 20% { transform: scale(1.1); opacity: 1; } 
+            80% { transform: scale(1); opacity: 1; } 100% { transform: scale(1.2); opacity: 0; }
+        }
+        #record-status {
+            font-size: 12px; color: #fff; text-align: center; font-weight: bold;
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.6); padding: 6px 16px; border-radius: 20px; display: none; z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark">
+                <svg class="icon" fill="none" height="24" viewBox="0 0 24 24" width="24" style="stroke: var(--cream);"><path d="M9 11V6a3 3 0 0 1 6 0v5M5 15h14v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-2zM4 19h16" stroke-width="2"/></svg>
+            </div>
+            <div><strong>盖一下</strong><small>STAMP SOMETHING</small></div>
+        </div>
+        
+        <div class="steps">
+            <span class="active" id="nav-step1"><b>1</b> 画印章</span><i></i>
+            <span id="nav-step2"><b>2</b> 上传照片</span><i></i>
+            <span id="nav-step3"><b>3</b> 盖一下</span>
+        </div>
+
+        <div class="header-actions">
+            <div class="export-menu">
+                <button class="dark-button">
+                    <svg class="icon" fill="none" height="18" viewBox="0 0 24 24" width="18"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" /></svg>导出作品<svg class="icon" fill="none" height="15" viewBox="0 0 24 24" width="15" style="transform:rotate(90deg);"><path d="m9 18 6-6-6-6" /></svg>
+                </button>
+                <div class="export-popover">
+                    <button id="btn-export-jpg">JPG 图片</button>
+                    <button id="btn-record-gif">生成 GIF 动图</button>
+                    <button id="btn-record-video">录制 WebM 视频</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-copy">
+            <div>
+                <span class="eyebrow"><svg class="icon" fill="none" height="16" viewBox="0 0 24 24" width="16"><path d="m12 2 1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5L12 2Zm7 13 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z" /></svg>手作印章实验室</span>
+                <h1>把你的印章，<em>盖进照片里。</em></h1>
+            </div>
+            <p>涂鸦成章、趣味由你</p>
+        </section>
+
+        <section class="maker-grid" id="maker-section">
+            <article class="panel draw-panel">
+                <div class="panel-heading">
+                    <div><span class="number">01</span><div><h2>画一个印章</h2><p>大胆一点，歪歪扭扭也很好</p></div></div>
+                    <span class="status-dot">正在创作</span>
+                </div>
+
+                <div class="drawing-layout">
+                    <div class="drawing-column" style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="tool-row">
+                            <div class="tool-group">
+                                <button class="selected" id="tool-brush" title="画笔"><svg class="icon" fill="none" height="18" viewBox="0 0 24 24" width="18"><path d="m14 3 7 7-9.5 9.5a4.95 4.95 0 0 1-7-7L14 3Zm-8.5 8.5 7 7M4 21c2.5 0 4-1.2 4-3" /></svg></button>
+                                <button id="tool-eraser" title="橡皮擦"><svg class="icon" fill="none" height="18" viewBox="0 0 24 24" width="18"><path d="m7 21-4-4L15 5l6 6-10 10H7Zm2-2-5-5m9 7h8" /></svg></button>
+                                <span></span>
+                                <button id="btn-undo" title="撤回"><svg class="icon" fill="none" height="18" viewBox="0 0 24 24" width="18"><path d="M4 7v5h5M20 17A8 8 0 0 0 5.1 12" /></svg></button>
+                                <button id="btn-redo" title="重做"><svg class="icon" fill="none" height="18" viewBox="0 0 24 24" width="18"><path d="M20 7v5h-5M4 17a8 8 0 0 1 14.9-5" /></svg></button>
+                                <button id="btn-clear" title="清空画板"><svg class="icon" fill="none" height="18" viewBox="0 0 24 24" width="18"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg></button>
+                            </div>
+                            <label class="brush-control">笔触 <input type="range" id="brush-size" min="4" max="34" value="14" style="width:100px;"><b id="brush-val">14</b></label>
+                        </div>
+                        <div class="drawing-paper" id="draw-paper">
+                            <canvas id="draw-canvas" width="480" height="380"></canvas>
+                            <span class="paper-note">在这里画</span>
+                        </div>
+                    </div>
+                    
+                    <aside class="preview-column">
+                        <div class="preview-label"><svg class="icon" fill="none" height="16" viewBox="0 0 24 24" width="16"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" /><circle cx="12" cy="12" r="2.5" /></svg>实时预览</div>
+                        <div class="seal-preview"><canvas id="preview-canvas" width="140" height="140"></canvas></div>
+                        <div class="slider-group"><label><span>印章图案大小</span><span id="val-scale">1.4</span></label><input type="range" id="slider-scale" min="0.3" max="2.5" step="0.1" value="1.4" style="width:100%;"></div>
+                        <div class="color-picker-wrapper"><label>印泥颜色</label><input type="color" id="color-picker" value="#d34d50"></div>
+                        <div class="slider-group"><label><span>线条粗细</span><span id="val-threshold">136</span></label><input type="range" id="slider-threshold" min="30" max="220" value="136" style="width:100%;"></div>
+                        <div class="slider-group"><label><span>斑驳做旧</span><span id="val-noise">0.1</span></label><input type="range" id="slider-noise" min="0" max="1" step="0.05" value="0.1" style="width:100%;"></div>
+                        <button class="btn-confirm" id="btn-confirm-stamp">确认印章 <svg class="icon" fill="none" height="16" viewBox="0 0 24 24" width="16"><path d="m9 18 6-6-6-6" /></svg></button>
+                    </aside>
+                </div>
+
+                <div class="action-row">
+                    <label class="btn-upload purple">上传印章图片<input type="file" id="seal-upload-2d" accept="image/*" hidden></label>
+                    <label class="btn-upload red">上传3D模型(.glb)<input type="file" id="model-upload" accept=".glb,.gltf" hidden></label>
+                    <label class="btn-upload purple">特效图(PNG)<input type="file" id="effect-upload" accept="image/png,image/*" hidden></label>
+                    <label class="btn-upload purple">音效(MP3)<input type="file" id="sound-upload" accept="audio/*" hidden></label>
+                    <button class="btn-upload yellow" id="btn-reset-draw" style="flex: 0 0 80px;">恢复默认</button>
+                </div>
+            </article>
+
+            <aside class="panel library-panel">
+                <div class="panel-heading compact"><div><span class="number">印</span><div><h2>印章铺子</h2><p>挑一个趁手的章</p></div></div></div>
+                
+                <div class="accordion-item">
+                    <button class="accordion-header" id="header-3d">
+                        立体印章 <svg class="icon" fill="none" height="18" viewBox="0 0 24 24" width="18"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="accordion-content" id="content-3d">
+                        <div class="object-grid">
+                            <button class="object-card" onclick="loadPreset3DModel('jade')"><span class="stamp-object jade"><i>篆</i></span><b>玉印</b></button>
+                            <button class="object-card" onclick="loadPreset3DModel('plum')"><span class="stamp-object plum"><i>梅</i></span><b>梅花</b></button>
+                            <button class="object-card" onclick="loadPreset3DModel('cat')"><span class="stamp-object cat"><i>猫</i></span><b>小猫</b></button>
+                            <button class="object-card active" onclick="loadPreset3DModel('classic')"><span class="stamp-object classic"><i>印</i></span><b>普通章</b></button>
+                        </div>
+                        <div class="rotation-controls">
+                            <div class="rotation-slider-group">
+                                <label><span>左右旋转</span><span id="val-rot-y">0</span>°</label>
+                                <input type="range" id="slider-rot-y" min="-180" max="180" value="0" style="width:100%;">
+                            </div>
+                            <div class="rotation-slider-group">
+                                <label><span>上下旋转</span><span id="val-rot-x">0</span>°</label>
+                                <input type="range" id="slider-rot-x" min="-180" max="180" value="0" style="width:100%;">
+                            </div>
+                            <div class="rotation-slider-group">
+                                <label><span>印章大小</span><span id="val-stamp-size">1.4</span></label>
+                                <input type="range" id="slider-stamp-size" min="0.3" max="2.5" step="0.1" value="1.4" style="width:100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header active" id="header-2d">
+                        印章图案 <svg class="icon" fill="none" height="18" viewBox="0 0 24 24" width="18"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="accordion-content active" id="content-2d">
+                        <div class="preset-grid">
+                            <button class="preset-card active" onclick="loadPresetStamp('yiyue')"><span class="seal-square">已阅</span><small>已阅</small></button>
+                            <button class="preset-card" onclick="loadPresetStamp('bang')"><span class="seal-round">棒</span><small>棒</small></button>
+                            <button class="preset-card" onclick="loadPresetStamp('100')"><span class="seal-burst">100分</span><small>100分</small></button>
+                            <button class="preset-card" onclick="loadPresetStamp('good')"><span class="seal-wide">好事发生</span><small>好事发生</small></button>
+                        </div>
+                    </div>
+                </div>
+                
+            </aside>
+        </section>
+
+        <section class="workspace-section" id="workspace-section">
+            <div class="workspace-title">
+                <div><span class="number">02</span><div><h2>上传照片，然后盖一下</h2><p>点击画面任意位置落印，滚轮缩放画布</p></div></div>
+                <div class="workspace-tools">
+                    <button id="btn-upload-photo"><svg class="icon" fill="none" height="14" viewBox="0 0 24 24" width="14"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 20h16" /></svg>换张照片</button>
+                    <input type="file" id="photo-input" accept="image/*" hidden>
+                    <button id="btn-reset-camera"><svg class="icon" fill="none" height="14" viewBox="0 0 24 24" width="14"><path d="M12 2v20m0-20-3 3m3-3 3 3m-3 17-3-3m3 3 3-3M2 12h20M2 12l3-3m-3 3 3 3m17-3-3-3m3 3-3 3" /></svg>摆正画布</button>
+                    <button id="btn-clear-all-stamps" style="color: var(--red); border-color: var(--red);"><svg class="icon" fill="none" height="14" viewBox="0 0 24 24" width="14"><path d="M4 7v5h5M20 17A8 8 0 0 0 5.1 12" /></svg>撤销全部落印</button>
+                </div>
+            </div>
+            <div class="photo-workspace">
+                <div class="canvas-meta"><span>100%</span><i></i><span>0°</span></div>
+                <div id="three-canvas-container"></div>
+                <div class="workspace-hint"><svg class="icon" fill="none" height="16" viewBox="0 0 24 24" width="16"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="m3 16 5-5 4 4 3-3 6 6M16.5 8.5h.01" /></svg><span><b>提示：</b>点击画面落印 · 滚轮缩放</span></div>
+                
+                <div id="countdown-overlay"><div id="countdown-text">3</div></div>
+                <div id="record-status"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==== 修改后的页脚 ==== -->
+    <footer>
+        <div class="brand mini">
+            <div class="brand-mark">
+                <svg class="icon" fill="none" height="18" viewBox="0 0 24 24" width="18" style="stroke: var(--cream);"><path d="M9 11V6a3 3 0 0 1 6 0v5M5 15h14v2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-2zM4 19h16" stroke-width="2"/></svg>
+            </div>
+            <strong>盖一下</strong>
+        </div>
+        
+        <div class="footer-center">
+            <p>涂鸦成章 · 趣味由你</p>
+            <div class="footer-links">
+                <a onclick="openPolicy('terms')">使用条款</a>
+                <span>|</span>
+                <a onclick="openPolicy('privacy')">隐私政策</a>
+            </div>
+        </div>
+
+        <div class="footer-stats">
+            <div class="breathing-dot"></div>
+            <span id="stamp-counter">已累计诞生 100 枚印章</span>
+        </div>
+    </footer>
+    
+    <button class="toast" id="toast">提示信息</button>
+    <button id="recording-indicator"><div class="red-dot"></div>视频录制中 ... 再次点击停止录制并导出</button>
+
+    <!-- ==== 新增：条款弹窗 ==== -->
+    <div id="policy-modal" class="modal-overlay">
+        <div class="modal-paper">
+            <div class="paper-dashed-border"></div>
+            <div class="modal-header">
+                <h2 id="modal-title">使用条款</h2>
+                <button class="modal-close" onclick="closePolicy()">✕</button>
+            </div>
+            <div class="modal-body" id="modal-content"></div>
+            <div class="modal-footer">
+                <button class="btn-confirm" onclick="closePolicy()">我知道了</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+window.showToast = function(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// 滚动联动
+window.addEventListener('scroll', () => {
+    const maker = document.getElementById('maker-section');
+    const workspace = document.getElementById('workspace-section');
+    const makerRect = maker.getBoundingClientRect();
+    const workspaceRect = workspace.getBoundingClientRect();
+    if (workspaceRect.top < 300) {
+        document.getElementById('nav-step1').classList.remove('active'); document.getElementById('nav-step2').classList.remove('active'); document.getElementById('nav-step3').classList.add('active');
+    } else if (makerRect.top < -150) {
+        document.getElementById('nav-step1').classList.remove('active'); document.getElementById('nav-step2').classList.add('active'); document.getElementById('nav-step3').classList.remove('active');
+    } else {
+        document.getElementById('nav-step1').classList.add('active'); document.getElementById('nav-step2').classList.remove('active'); document.getElementById('nav-step3').classList.remove('active');
+    }
+});
+
+// ==========================================
+// 新增：弹窗逻辑
+// ==========================================
+const policyData = {
+    terms: {
+        title: "📜 使用条款",
+        content: `
+            <p><strong>1. 仅供娱乐与创作：</strong> 本工具仅供个人娱乐与艺术创作使用，请勿用于伪造公文、合同等违法违规行为。</p>
+            <p><strong>2. 版权与肖像权：</strong> 您上传的所有内容（包括照片、自行上传的 3D 模型等）需确保拥有合法版权或肖像权。由您自行上传引发的版权纠纷，由您自行承担。</p>
+            <p><strong>3. 作品保存：</strong> 本工具为纯前端处理，不会将您的照片保存至服务器。请务必及时保存您导出的作品。</p>
+            <p><strong>4. 免责声明：</strong> 对于因使用本工具造成的任何数据丢失、系统故障或间接损失，本站不承担任何责任。</p>
+            <p><strong>5.未成年人：</strong> 如果您是未成年人，必须在使用服务前获得父母或法定监护人的同意，并在监护人的监护下使用。</p>
+            <p><strong>6.禁止活动：</strong>违反法律法规、公序良俗的行为；涉嫌违法犯罪的行为；侵犯他人著作权、商标权、肖像权、版权及其他合法权益的行为；冒充、传播虚假信息或可能导致第三方误认的活动；给服务带来过重负担的活动，或逆向工程、分析、修改或抓取；干扰、破坏本服务正常运行的行为；利用服务获得的结果侵犯第三方权利，或用于不当用途；运营商认为不适当的其他活动；</p>
+            <p><strong>7.联系我们：</strong>如果您发现侵权内容，或是对本服务条款有疑问，可发邮件至:w529998@163.com,我们将及时沟通处理;</p>
+        `
+    },
+    privacy: {
+        title: "🛡️ 隐私政策",
+        content: `
+            <p><strong>1. 本地处理：</strong> 我们极其重视您的隐私。您的所有照片上传、画板绘制均在您的本地浏览器中完成，数据<strong>绝不会</strong>被发送到我们的服务器。</p>
+            <p><strong>2. 无追踪：</strong> 我们不会记录您的 IP 地址，也不会植入恶意 Cookie 来追踪您的网络行为。</p>
+            <p><strong>3. 第三方服务：</strong> 页面底部的“累计印章”数字使用了公开的统计接口，仅统计点击次数，不涉及您的个人身份信息。</p>
+            <p><strong>4. 未成年人使用：</strong> 未成年人如需使用本服务，应当事先取得监护人的同意，并在监护人的监护下使用。</p>
+            <p><strong>5. 您的权利：</strong> 您可以随时关闭网页，所有留在内存中的临时图像数据将被浏览器自动清除。</p>
+        `
+    }
+};
+
+window.openPolicy = function(type) {
+    const modal = document.getElementById('policy-modal');
+    const titleEl = document.getElementById('modal-title');
+    const contentEl = document.getElementById('modal-content');
+    titleEl.innerHTML = policyData[type].title;
+    contentEl.innerHTML = policyData[type].content;
+    modal.classList.add('show');
+    contentEl.scrollTop = 0;
+}
+
+window.closePolicy = function() {
+    const modal = document.getElementById('policy-modal');
+    modal.classList.remove('show');
+}
+
+document.getElementById('policy-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'policy-modal') closePolicy();
+});
+
+
+// ==========================================
+// 新增：计数器逻辑 (从1000开始)
+// ==========================================
+const BASE_COUNT = 100;
+let currentCount = 100;
+
+// 初始化：拉取云端数据并加上基准值
+fetch('https://api.countapi.xyz/get/ga1xia-stamps/visits')
+    .then(res => res.json())
+    .then(data => {
+        currentCount = BASE_COUNT + (data.value || 0);
+        document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
+    })
+    .catch(e => {
+        document.getElementById('stamp-counter').innerText = `已累计诞生 ${BASE_COUNT.toLocaleString()} 枚印章`;
+    });
+
+// 触发计数事件：点击“确认印章”时调用
+function addCount() {
+    currentCount++;
+    document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
+    
+    fetch('https://api.countapi.xyz/hit/ga1xia-stamps/visits').catch(e => console.log('网络问题，云端未同步', e));
+}
+
+
+// ==========================================
+// 一、2D 画板与实时处理逻辑
+// ==========================================
+const drawCanvas = document.getElementById('draw-canvas');
+const ctx = drawCanvas.getContext('2d', { willReadFrequently: true });
+const previewCanvas = document.getElementById('preview-canvas');
+const pctx = previewCanvas.getContext('2d');
+
+const offscreenCanvas = document.createElement('canvas');
+offscreenCanvas.width = 480;
+offscreenCanvas.height = 380;
+const octx = offscreenCanvas.getContext('2d', { willReadFrequently: true });
+
+let isDrawing = false;
+let brushSize = 14;
+let isEraser = false;
+let historyStack = [];
+let currentHistoryIndex = -1;
+
+function saveHistory() {
+    historyStack = historyStack.slice(0, currentHistoryIndex + 1);
+    historyStack.push(offscreenCanvas.toDataURL());
+    currentHistoryIndex = historyStack.length - 1;
+}
+
+function initDrawCanvas() {
+    octx.globalCompositeOperation = 'source-over';   
+    octx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+    octx.strokeStyle = "#000000";
+    octx.lineWidth = 9;
+    octx.strokeRect(96, 60, 288, 260);
+    octx.font = "700 120px serif";
+    octx.textAlign = "center";
+    octx.textBaseline = "middle";
+    octx.fillStyle = "#000000";
+    octx.fillText("印", 240, 190);
+    renderStampEffects();
+    saveHistory();
+}
+
+function renderStampEffects() {
+    const w = offscreenCanvas.width;
+    const h = offscreenCanvas.height;
+
+    ctx.globalCompositeOperation = 'source-over';
+    pctx.globalCompositeOperation = 'source-over';
+    octx.globalCompositeOperation = 'source-over';
+    
+    const imgData = octx.getImageData(0, 0, w, h);
+    const data = imgData.data;
+    
+    const hex = document.getElementById('color-picker').value;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    
+    const threshold = parseInt(document.getElementById('slider-threshold').value);
+    const noise = parseFloat(document.getElementById('slider-noise').value);
+    
+    for (let i = 0; i < data.length; i += 4) {
+        const origAlpha = data[i+3];
+        if (origAlpha < 10) {
+            data[i+3] = 0;
+            continue;
+        }
+        
+        const mappedAlpha = Math.max(0, Math.min(255, (origAlpha - (255 - threshold)) * 3));
+        let finalAlpha = mappedAlpha;
+        
+        if (finalAlpha > 0 && Math.random() < noise) {
+            finalAlpha *= Math.random() * 0.4;
+        }
+        
+        data[i] = r; data[i+1] = g; data[i+2] = b;
+        data[i+3] = finalAlpha;
+    }
+    
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = w; tempCanvas.height = h;
+    const tCtx = tempCanvas.getContext('2d');
+    tCtx.putImageData(imgData, 0, 0);
+    
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(tempCanvas, 0, 0);
+    
+    pctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    pctx.drawImage(tempCanvas, 20, 0, 440, 380, 0, 0, 140, 140);
+    
+    if (window.stage3D && window.stage3D.stampFace) {
+        const tex = new THREE.CanvasTexture(tempCanvas);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        window.stage3D.stampFace.material.map = tex;
+        window.stage3D.stampFace.material.needsUpdate = true;
+        window.stage3D.currentSealTextureCanvas = tempCanvas;
+    }
+}
+
+function getPos(e) {
+    const rect = drawCanvas.getBoundingClientRect();
+    return { x: (e.clientX - rect.left) / rect.width * drawCanvas.width, y: (e.clientY - rect.top) / rect.height * drawCanvas.height };
+}
+
+drawCanvas.addEventListener('pointerdown', (e) => {
+    isDrawing = true; const p = getPos(e); 
+    ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    octx.beginPath(); octx.moveTo(p.x, p.y);
+});
+
+drawCanvas.addEventListener('pointermove', (e) => {
+    if (!isDrawing) return;
+    const p = getPos(e);
+    
+    octx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
+    octx.strokeStyle = "#000000";
+    octx.lineWidth = brushSize; octx.lineCap = 'round'; octx.lineJoin = 'round';
+    octx.lineTo(p.x, p.y); octx.stroke();
+    
+    ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
+    ctx.strokeStyle = document.getElementById('color-picker').value;
+    ctx.lineWidth = brushSize; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.lineTo(p.x, p.y); ctx.stroke();
+});
+
+drawCanvas.addEventListener('pointerup', () => {
+    if (isDrawing) { 
+        isDrawing = false; 
+        renderStampEffects();
+        saveHistory();
+    }
+});
+
+document.getElementById('brush-size').addEventListener('input', (e) => { brushSize = e.target.value; document.getElementById('brush-val').innerText = brushSize; });
+document.getElementById('tool-brush').addEventListener('click', () => { isEraser = false; document.getElementById('tool-brush').classList.add('selected'); document.getElementById('tool-eraser').classList.remove('selected'); document.getElementById('draw-paper').classList.remove('eraser'); });
+document.getElementById('tool-eraser').addEventListener('click', () => { isEraser = true; document.getElementById('tool-eraser').classList.add('selected'); document.getElementById('tool-brush').classList.remove('selected'); document.getElementById('draw-paper').classList.add('eraser'); });
+
+document.getElementById('btn-undo').addEventListener('click', () => { if (currentHistoryIndex > 0) { currentHistoryIndex--; const img = new Image(); img.src = historyStack[currentHistoryIndex]; img.onload = () => { octx.globalCompositeOperation = 'source-over'; octx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height); octx.drawImage(img, 0, 0); renderStampEffects(); } } });
+document.getElementById('btn-redo').addEventListener('click', () => { if (currentHistoryIndex < historyStack.length - 1) { currentHistoryIndex++; const img = new Image(); img.src = historyStack[currentHistoryIndex]; img.onload = () => { octx.globalCompositeOperation = 'source-over'; octx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height); octx.drawImage(img, 0, 0); renderStampEffects(); } } });
+document.getElementById('btn-clear').addEventListener('click', () => { octx.globalCompositeOperation = 'source-over'; octx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height); renderStampEffects(); saveHistory(); });
+
+document.getElementById('btn-reset-draw').addEventListener('click', () => {
+    initDrawCanvas();
+    window.stage3D.customEffectTexture = null;
+    document.getElementById('effect-upload').value = ''; 
+    window.stage3D.customSound = null;
+    document.getElementById('sound-upload').value = '';
+    window.stage3D.resetRotationSliders();
+    
+    document.getElementById('slider-scale').value = 1.4;
+    document.getElementById('val-scale').innerText = '1.4';
+    window.stage3D.setPatternScale(1.4);
+
+    document.getElementById('slider-stamp-size').value = 1.4;
+    document.getElementById('val-stamp-size').innerText = '1.4';
+    window.stage3D.setStampScale(1.4);
+
+    showToast("已恢复默认，清除自定义特效/音效");
+});
+
+window.loadPresetStamp = function(type) {
+    octx.globalCompositeOperation = 'source-over'; 
+    octx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+    octx.strokeStyle = "#000000"; octx.fillStyle = "#000000"; octx.textAlign = "center"; octx.textBaseline = "middle"; octx.font = "700 80px serif";
+    if (type === 'yiyue') { octx.lineWidth = 8; octx.strokeRect(120, 90, 240, 200); octx.fillText("已阅", 240, 190); } 
+    else if (type === 'bang') { octx.lineWidth = 8; octx.beginPath(); octx.arc(240, 190, 100, 0, Math.PI*2); octx.stroke(); octx.font = "700 100px serif"; octx.fillText("棒", 240, 190); } 
+    else if (type === '100') { octx.lineWidth = 6; octx.beginPath(); octx.arc(240, 190, 110, 0, Math.PI*2); octx.stroke(); octx.font = "700 70px serif"; octx.fillText("100分", 240, 190); } 
+    else if (type === 'good') { octx.lineWidth = 8; octx.beginPath(); octx.moveTo(100, 250); octx.lineTo(380, 250); octx.stroke(); octx.font = "700 60px serif"; octx.fillText("好事发生", 240, 180); }
+    renderStampEffects(); saveHistory();
+    document.querySelectorAll('.preset-card').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active'); showToast("已载入图案");
+}
+
+initDrawCanvas();
+
+// ==========================================
+// 二、Three.js 核心 3D 引擎
+// ==========================================
+class Stage3D {
+    constructor(container) {
+        this.container = container;
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color('#22231f');
+        this.camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        this.camera.position.set(0, 0, 10);
+
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+        this.renderer.setSize(container.clientWidth, container.clientHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(this.renderer.domElement);
+
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true; this.controls.dampingFactor = 0.08;
+        this.controls.maxPolarAngle = Math.PI / 2 + 0.2; this.controls.minDistance = 3; this.controls.maxDistance = 20;
+        
+        this.scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.5); dirLight.position.set(5, 10, 7); this.scene.add(dirLight);
+
+        const geometry = new THREE.PlaneGeometry(1, 1, 128, 128);
+        this.photoMaterial = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+        this.photoMaterial.onBeforeCompile = (shader) => {
+            shader.uniforms.uPressCenter = { value: new THREE.Vector2(0.5, 0.5) };
+            shader.uniforms.uPressStrength = { value: 0.0 };
+            this.photoMaterial.userData.shader = shader;
+            shader.vertexShader = shader.vertexShader.replace('#include <common>', `#include <common>\n uniform vec2 uPressCenter;\n uniform float uPressStrength;`)
+            .replace('#include <begin_vertex>', `#include <begin_vertex>\n float dist = distance(uv, uPressCenter);\n float falloff = smoothstep(0.15, 0.0, dist);\n transformed.z -= falloff * uPressStrength * 0.8;`);
+        };
+        this.photoMesh = new THREE.Mesh(geometry, this.photoMaterial);
+        this.photoMesh.visible = false;
+        this.scene.add(this.photoMesh);
+
+        this.composeCanvas = document.createElement('canvas');
+        this.composeCanvas.width = 1024; this.composeCanvas.height = 1024;
+        this.composeCtx = this.composeCanvas.getContext('2d');
+        this.stampsHistory = []; this.originalImageData = null;
+
+        this.baseRotationX = Math.PI / 2;
+        this.targetRotX = 0;
+        this.targetRotY = 0;
+        this.currentRotX = 0;
+        this.currentRotY = 0;
+        
+        this.patternScale = 1.4; 
+
+        this.createStampModel();
+
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+        this.isAnimating = false; this.currentUV = new THREE.Vector2();
+        this.stampHoverZ = 1.0; this.stampPressZ = 0.05;
+        
+        this.activeEffects = []; this.customEffectTexture = null;
+        this.customSound = null; this.defaultSoundAudioCtx = null;
+
+        this.initEvents(); this.animate();
+    }
+
+    resetRotationSliders() {
+        this.targetRotX = 0;
+        this.targetRotY = 0;
+        document.getElementById('slider-rot-x').value = 0;
+        document.getElementById('slider-rot-y').value = 0;
+        document.getElementById('val-rot-x').innerText = 0;
+        document.getElementById('val-rot-y').innerText = 0;
+    }
+
+    createStampModel() {
+        const stampMat = new THREE.MeshStandardMaterial({ color: 0x3a4b5c, roughness: 0.4, metalness: 0.1 });
+        const goldMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.2, metalness: 0.8 });
+
+        this.stampGroup = new THREE.Group();
+        this.stampInner = new THREE.Group(); this.stampGroup.add(this.stampInner);
+        
+        const handle = new THREE.Mesh(new THREE.SphereGeometry(0.3, 32, 16), stampMat); handle.position.y = 1.2; this.stampInner.add(handle);
+        const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.25, 0.8, 32), stampMat); neck.position.y = 0.6; this.stampInner.add(neck);
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.4, 32), stampMat); base.position.y = 0.2; this.stampInner.add(base);
+        const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.61, 0.61, 0.05, 32), goldMat); ring.position.y = 0.025; this.stampInner.add(ring);
+
+        const faceMat = new THREE.MeshBasicMaterial({ map: null, transparent: true, alphaTest: 0.1, depthWrite: false });
+        this.stampFace = new THREE.Mesh(new THREE.CircleGeometry(0.58, 32), faceMat);
+        this.stampFace.rotation.x = -Math.PI / 2; this.stampFace.position.y = 0.001; this.stampInner.add(this.stampFace);
+        
+        this.stampFace.scale.set(this.patternScale / 1.4, this.patternScale / 1.4, 1);
+
+        this.baseRotationX = Math.PI / 2;
+        this.stampGroup.rotation.x = this.baseRotationX;
+        this.stampGroup.visible = false; this.scene.add(this.stampGroup);
+        this.setStampScale(1.4);
+    }
+
+    setPatternScale(scale) {
+        this.patternScale = scale;
+        if (this.stampFace) {
+            this.stampFace.scale.set(scale / 1.4, scale / 1.4, 1);
+        }
+    }
+
+    setStampScale(scale) { 
+        this.stampInner.scale.set(scale, scale, scale); 
+        this.stampHoverZ = 1.0 * Math.max(0.5, scale); 
+    }
+
+    loadCustomModel(file) {
+        const url = URL.createObjectURL(file); const loader = new GLTFLoader();
+        loader.load(url, (gltf) => {
+            this.stampInner.clear(); const model = gltf.scene;
+            const box = new THREE.Box3().setFromObject(model); const center = box.getCenter(new THREE.Vector3()); const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z); const scale = 2.0 / maxDim;
+            model.scale.setScalar(scale); model.position.x -= center.x * scale; model.position.z -= center.z * scale; model.position.y -= box.min.y * scale;
+            this.stampInner.add(model);
+            const faceMat = new THREE.MeshBasicMaterial({ map: null, transparent: true, alphaTest: 0.1, depthWrite: false });
+            this.stampFace = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), faceMat);
+            this.stampFace.rotation.x = -Math.PI / 2; this.stampFace.position.y = 0.01; this.stampInner.add(this.stampFace);
+            this.stampFace.scale.set(this.patternScale / 1.4, this.patternScale / 1.4, 1);
+            
+            renderStampEffects(); 
+            
+            this.baseRotationX = 0; 
+            this.stampGroup.rotation.x = this.baseRotationX;
+            this.resetRotationSliders();
+            
+            showToast("3D 模型加载成功");
+        }, undefined, (error) => { alert('模型加载失败'); });
+    }
+
+    loadPresetModelByType(type) {
+        const modelMap = {
+            jade: './yzyuxi.glb',       
+            plum: './yzmeihua.glb',     
+            cat:  './yzxiaomao.glb'     
+        };
+
+        this.resetRotationSliders();
+
+        if (type === 'classic') {
+            this.stampInner.clear();
+            const stampMat = new THREE.MeshStandardMaterial({ color: 0x3a4b5c, roughness: 0.4, metalness: 0.1 });
+            const goldMat  = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.2, metalness: 0.8 });
+            
+            const handle = new THREE.Mesh(new THREE.SphereGeometry(0.3, 32, 16), stampMat); handle.position.y = 1.2; this.stampInner.add(handle);
+            const neck   = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.25, 0.8, 32), stampMat); neck.position.y = 0.6; this.stampInner.add(neck);
+            const base   = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.4, 32), stampMat); base.position.y = 0.2; this.stampInner.add(base);
+            const ring   = new THREE.Mesh(new THREE.CylinderGeometry(0.61, 0.61, 0.05, 32), goldMat); ring.position.y = 0.025; this.stampInner.add(ring);
+
+            const faceMat = new THREE.MeshBasicMaterial({ map: null, transparent: true, alphaTest: 0.1, depthWrite: false });
+            this.stampFace = new THREE.Mesh(new THREE.CircleGeometry(0.58, 32), faceMat);
+            this.stampFace.rotation.x = -Math.PI / 2; this.stampFace.position.y = 0.001; this.stampInner.add(this.stampFace);
+            this.stampFace.scale.set(this.patternScale / 1.4, this.patternScale / 1.4, 1);
+            
+            this.baseRotationX = Math.PI / 2;
+            this.stampGroup.rotation.x = this.baseRotationX;
+            renderStampEffects();
+            showToast("已切换为普通章");
+            return;
+        }
+
+        const url = modelMap[type];
+        if (!url) return;
+
+        const loader = new GLTFLoader();
+        loader.load(url, (gltf) => {
+            this.stampInner.clear();
+            const model = gltf.scene;
+            
+            const box = new THREE.Box3().setFromObject(model);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const scale = 2.0 / maxDim; 
+            
+            model.scale.setScalar(scale); 
+            model.position.x -= center.x * scale; 
+            model.position.z -= center.z * scale; 
+            model.position.y -= box.min.y * scale;
+            
+            this.stampInner.add(model);
+            
+            const faceMat = new THREE.MeshBasicMaterial({ map: null, transparent: true, alphaTest: 0.1, depthWrite: false });
+            this.stampFace = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), faceMat);
+            this.stampFace.rotation.x = -Math.PI / 2; 
+            this.stampFace.position.y = 0.01; 
+            this.stampInner.add(this.stampFace);
+            this.stampFace.scale.set(this.patternScale / 1.4, this.patternScale / 1.4, 1);
+            
+            renderStampEffects(); 
+            
+            this.baseRotationX = 0; 
+            this.stampGroup.rotation.x = this.baseRotationX;
+            showToast("已加载 " + (type === 'jade' ? '玉印' : type === 'plum' ? '梅花' : '小猫') + " 模型");
+        }, undefined, (error) => { 
+            console.error(error); 
+            alert('模型加载失败，请检查文件名。'); 
+        });
+    }
+
+    setPhoto(img) {
+        this.photoMesh.visible = true;
+        this.composeCanvas.width = img.width; this.composeCanvas.height = img.height;
+        this.composeCtx.drawImage(img, 0, 0);
+        this.originalImageData = this.composeCtx.getImageData(0, 0, img.width, img.height); this.stampsHistory = [];
+
+        const aspect = img.width / img.height; const maxSize = 6;
+        let w, h;
+        if (aspect > 1) { w = maxSize; h = maxSize / aspect; } else { w = maxSize * aspect; h = maxSize; }
+        this.photoMesh.geometry.dispose(); this.photoMesh.geometry = new THREE.PlaneGeometry(w, h, 128, 128); 
+        this.photoTexture = new THREE.CanvasTexture(this.composeCanvas); this.photoTexture.colorSpace = THREE.SRGBColorSpace;
+        this.photoMaterial.map = this.photoTexture; this.photoMaterial.needsUpdate = true;
+        this.resetCamera(); 
+    }
+
+    resetCamera() {
+        if (!this.photoMesh.visible) return;
+        const fov = this.camera.fov * (Math.PI / 180); const h = this.photoMesh.geometry.parameters.height;
+        const distance = Math.abs(h / (2 * Math.tan(fov / 2)));
+        this.camera.position.set(0, 0, distance * 1.4); this.camera.up.set(0, 1, 0); 
+        this.controls.target.set(0, 0, 0); this.controls.update();
+    }
+
+    triggerEffectAndSound(position) {
+        if (this.customSound) { this.customSound.currentTime = 0; this.customSound.play().catch(e => console.log(e)); } 
+        else {
+            if (!this.defaultSoundAudioCtx) this.defaultSoundAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const ctx = this.defaultSoundAudioCtx; const osc = ctx.createOscillator(); const gain = ctx.createGain();
+            osc.type = 'sine'; osc.frequency.setValueAtTime(150, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(1, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.15);
+        }
+        let material;
+        if (this.customEffectTexture) { material = new THREE.SpriteMaterial({ map: this.customEffectTexture, transparent: true, depthTest: false, depthWrite: false }); } 
+        else {
+            const c = document.createElement('canvas'); c.width = 128; c.height = 128; const cctx = c.getContext('2d');
+            const grad = cctx.createRadialGradient(64, 64, 10, 64, 64, 64);
+            grad.addColorStop(0, 'rgba(255,255,255,0)'); grad.addColorStop(0.5, 'rgba(193, 39, 45, 0.8)'); grad.addColorStop(1, 'rgba(193, 39, 45, 0)');
+            cctx.fillStyle = grad; cctx.fillRect(0, 0, 128, 128); const tex = new THREE.CanvasTexture(c);
+            material = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false, depthWrite: false });
+        }
+        const sprite = new THREE.Sprite(material); sprite.position.copy(position); sprite.position.z += 0.1;
+        const baseScale = this.customEffectTexture ? 1.5 : 1.0; sprite.scale.set(baseScale, baseScale, 1);
+        sprite.userData = { life: 0, maxLife: 0.6, baseScale: baseScale };
+        this.scene.add(sprite); this.activeEffects.push(sprite);
+    }
+
+    initEvents() {
+        const dom = this.renderer.domElement;
+        dom.addEventListener('pointermove', (e) => {
+            if (this.isAnimating || !this.photoMesh.visible) return;
+            const rect = dom.getBoundingClientRect();
+            this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1; this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            this.raycaster.setFromCamera(this.mouse, this.camera);
+            const intersects = this.raycaster.intersectObject(this.photoMesh);
+            if (intersects.length > 0) {
+                const intersect = intersects[0]; this.currentUV.copy(intersect.uv);
+                this.stampGroup.visible = true; this.stampGroup.position.x = intersect.point.x; this.stampGroup.position.y = intersect.point.y; this.stampGroup.position.z = this.stampHoverZ;
+            } else { this.stampGroup.visible = false; }
+        });
+        dom.addEventListener('pointerdown', (e) => {
+            if (e.button !== 0 || !this.stampGroup.visible || this.isAnimating) return;
+            if (this.controls.isDragging) return; this.pressStamp();
+        });
+        window.addEventListener('resize', () => {
+            this.camera.aspect = this.container.clientWidth / this.container.clientHeight; this.camera.updateProjectionMatrix();
+            this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        });
+    }
+
+    pressStamp(isAuto = false, customUV = null, overrideStamp = null) {
+        if (customUV) this.currentUV.copy(customUV);
+        this.isAnimating = true; this.stampGroup.visible = true;
+        if (customUV) {
+            const pos = new THREE.Vector3((customUV.x - 0.5) * this.photoMesh.geometry.parameters.width, (customUV.y - 0.5) * this.photoMesh.geometry.parameters.height, 0);
+            this.stampGroup.position.x = pos.x; this.stampGroup.position.y = pos.y;
+        }
+        const startZ = this.stampHoverZ; const endZ = this.stampPressZ;
+        const durationDown = 120; const durationHold = 80; const durationUp = 250;
+        let startTime = performance.now(); let phase = 'down';
+
+        const update = (time) => {
+            const elapsed = time - startTime; const shader = this.photoMaterial.userData.shader;
+            if (phase === 'down') {
+                const t = Math.min(elapsed / durationDown, 1);
+                this.stampGroup.position.z = startZ - (startZ - endZ) * (t * t);
+                if (shader) shader.uniforms.uPressStrength.value = t * t;
+                if (t >= 1) {
+                    phase = 'hold'; startTime = time;
+                    if (overrideStamp) { this.stampsHistory.push(overrideStamp); this.redrawCanvas(); } else { this.addStampToHistory(); }
+                    this.triggerEffectAndSound(this.stampGroup.position);
+                }
+            } else if (phase === 'hold') {
+                if (elapsed > durationHold) { phase = 'up'; startTime = time; }
+            } else if (phase === 'up') {
+                const t = Math.min(elapsed / durationUp, 1); const ease = 1 - Math.pow(1 - t, 3); 
+                this.stampGroup.position.z = endZ + (startZ - endZ) * ease;
+                if (shader) shader.uniforms.uPressStrength.value = 1 - ease;
+                if (t >= 1) {
+                    this.isAnimating = false; if (shader) shader.uniforms.uPressStrength.value = 0;
+                    if (isAuto) { this.stampGroup.visible = false; if (this.onAutoStampComplete) this.onAutoStampComplete(); }
+                    return;
+                }
+            }
+            requestAnimationFrame(update);
+        };
+        requestAnimationFrame(update);
+    }
+
+    addStampToHistory() {
+        if (!this.currentSealTextureCanvas) return;
+        const w = this.composeCanvas.width; const h = this.composeCanvas.height;
+        const x = this.currentUV.x * w; const y = (1 - this.currentUV.y) * h;
+        const sealCanvas = this.currentSealTextureCanvas;
+        const meshWidth = this.photoMesh.geometry.parameters.width;
+        
+        const scaleMultiplier = (this.stampInner.scale.x * this.stampFace.scale.x) / 1.4;
+        const drawWidth = (1.5 / meshWidth) * w * scaleMultiplier; 
+        const drawHeight = drawWidth * (sealCanvas.height / sealCanvas.width);
+        
+        this.stampsHistory.push({ x, y, drawWidth, drawHeight, angle: (Math.random() - 0.5) * 0.15, opacity: 1.0, texture: sealCanvas });
+        this.redrawCanvas();
+    }
+
+    redrawCanvas() {
+        if (!this.originalImageData) return;
+        this.composeCtx.putImageData(this.originalImageData, 0, 0);
+        this.stampsHistory.forEach(stamp => {
+            this.composeCtx.save(); this.composeCtx.translate(stamp.x, stamp.y); this.composeCtx.rotate(stamp.angle);
+            this.composeCtx.globalAlpha = stamp.opacity;
+            this.composeCtx.drawImage(stamp.texture, -stamp.drawWidth/2, -stamp.drawHeight/2, stamp.drawWidth, stamp.drawHeight);
+            this.composeCtx.restore();
+        });
+        if (this.photoTexture) this.photoTexture.needsUpdate = true;
+    }
+
+    clear() { this.stampsHistory = []; this.redrawCanvas(); }
+
+    getPhotoScreenRect() {
+        if (!this.photoMesh.visible) return null;
+        const box = new THREE.Box3().setFromObject(this.photoMesh);
+        const vertices = [ new THREE.Vector3(box.min.x, box.min.y, box.min.z), new THREE.Vector3(box.min.x, box.min.y, box.max.z), new THREE.Vector3(box.min.x, box.max.y, box.min.z), new THREE.Vector3(box.min.x, box.max.y, box.max.z), new THREE.Vector3(box.max.x, box.min.y, box.min.z), new THREE.Vector3(box.max.x, box.min.y, box.max.z), new THREE.Vector3(box.max.x, box.max.y, box.min.z), new THREE.Vector3(box.max.x, box.max.y, box.max.z) ];
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity; const canvas = this.renderer.domElement; const w = canvas.width; const h = canvas.height;
+        vertices.forEach(v => { v.project(this.camera); const x = (v.x * 0.5 + 0.5) * w; const y = (-v.y * 0.5 + 0.5) * h; if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; });
+        const pad = 4; return { x: Math.max(0, minX - pad), y: Math.max(0, minY - pad), width: Math.min(w - Math.max(0, minX - pad), maxX - minX + pad * 2), height: Math.min(h - Math.max(0, minY - pad), maxY - minY + pad * 2) };
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+        this.controls.update();
+
+        if (this.stampGroup) {
+            this.currentRotX += (this.targetRotX - this.currentRotX) * 0.1;
+            this.currentRotY += (this.targetRotY - this.currentRotY) * 0.1;
+            this.stampGroup.rotation.x = this.baseRotationX + this.currentRotX;
+            this.stampGroup.rotation.y = this.currentRotY;
+        }
+
+        if (!this.isAnimating && this.stampGroup.visible) this.stampGroup.position.z = this.stampHoverZ + Math.sin(Date.now() * 0.005) * 0.05;
+        for (let i = this.activeEffects.length - 1; i >= 0; i--) {
+            const sprite = this.activeEffects[i]; sprite.userData.life += 0.016; const progress = sprite.userData.life / sprite.userData.maxLife;
+            if (progress >= 1) { this.scene.remove(sprite); sprite.material.dispose(); if (sprite.material.map) sprite.material.map.dispose(); this.activeEffects.splice(i, 1); } 
+            else { const currentScale = sprite.userData.baseScale * (1 + progress * 2); sprite.scale.set(currentScale, currentScale, 1); sprite.material.opacity = 1 - progress; }
+        }
+        this.renderer.render(this.scene, this.camera);
+    }
+}
+
+const container = document.getElementById('three-canvas-container');
+window.stage3D = new Stage3D(container);
+
+const defaultImg = new Image();
+defaultImg.crossOrigin = "Anonymous";
+defaultImg.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="700" viewBox="0 0 1100 700"><defs><filter id="w"><feTurbulence baseFrequency=".015" numOctaves="3" seed="4"/><feDisplacementMap in="SourceGraphic" scale="16"/></filter><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#e7dcae"/><stop offset="1" stop-color="#f5edcf"/></linearGradient></defs><rect width="1100" height="700" fill="url(#sky)"/><g filter="url(#w)" opacity=".86"><path d="M0 490 150 330l100 82 170-245 185 268 128-158 217 213 150-83v293H0Z" fill="#89948b"/><path d="M0 541 190 405l101 91 174-194 162 172 164-110 176 177 133-77v236H0Z" fill="#4d5a54" opacity=".8"/><path d="M0 560q250-100 500 0t600-30v170H0Z" fill="#d4c18e"/><path d="M0 585q240-65 440 0t660-25" fill="none" stroke="#f8f2d9" stroke-width="30" opacity=".7"/><circle cx="827" cy="138" r="52" fill="#d66b54" opacity=".7"/></g><g fill="#252823" opacity=".75"><path d="M114 520h8v92h-8zM90 532q28-65 59 0-32-18-59 0Z"/><path d="M904 487h8v105h-8zM872 506q36-82 74 0-38-23-74 0Z"/></g></svg>`);
+defaultImg.onload = () => { window.stage3D.setPhoto(defaultImg); };
+renderStampEffects();
+
+// ==========================================
+// 三、UI 交互绑定
+// ==========================================
+document.getElementById('btn-confirm-stamp').addEventListener('click', () => {
+    addCount(); // 新增：点击确认印章计数器+1
+    document.getElementById('workspace-section').scrollIntoView({ behavior: 'smooth' }); 
+    showToast("印章已确认，请上传照片");
+});
+
+document.getElementById('btn-upload-photo').addEventListener('click', () => { document.getElementById('photo-input').click(); });
+document.getElementById('photo-input').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (event) => { const img = new Image(); img.onload = () => { window.stage3D.setPhoto(img); showToast("照片已就位，可以盖章了"); }; img.src = event.target.result; };
+        reader.readAsDataURL(e.target.files[0]);
+    }
+});
+
+document.getElementById('btn-reset-camera').addEventListener('click', () => { window.stage3D.resetCamera(); });
+document.getElementById('btn-clear-all-stamps').addEventListener('click', () => { window.stage3D.clear(); showToast("已撤销全部落印"); });
+
+document.getElementById('seal-upload-2d').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const maxSize = 800; let w = img.width, h = img.height;
+                if (w > maxSize || h > maxSize) { const ratio = Math.min(maxSize / w, maxSize / h); w *= ratio; h *= ratio; }
+                const offCanvas = document.createElement('canvas'); offCanvas.width = w; offCanvas.height = h;
+                const offCtx = offCanvas.getContext('2d'); offCtx.drawImage(img, 0, 0, w, h);
+                const imgData = offCtx.getImageData(0, 0, w, h); const data = imgData.data;
+                const bgR = data[0]; const bgG = data[1]; const bgB = data[2]; const tolerance = 60;
+                for (let i = 0; i < data.length; i += 4) {
+                    const cr = data[i], cg = data[i+1], cb = data[i+2];
+                    const dist = Math.sqrt(Math.pow(cr - bgR, 2) + Math.pow(cg - bgG, 2) + Math.pow(cb - bgB, 2));
+                    if (dist < tolerance) { data[i+3] = 0; } 
+                    else { data[i] = 0; data[i+1] = 0; data[i+2] = 0; data[i+3] = 255; }
+                }
+                offCtx.putImageData(imgData, 0, 0);
+                octx.globalCompositeOperation = 'source-over';  
+                octx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+                const scale = Math.min(offscreenCanvas.width / offCanvas.width, offscreenCanvas.height / offCanvas.height) * 0.8;
+                const drawW = offCanvas.width * scale; const drawH = offCanvas.height * scale;
+                octx.drawImage(offCanvas, (offscreenCanvas.width - drawW)/2, (offscreenCanvas.height - drawH)/2, drawW, drawH);
+                renderStampEffects(); saveHistory(); showToast("已上传印章图片，智能抠图完成");
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    }
+});
+
+window.loadPreset3DModel = function(type) {
+    window.stage3D.loadPresetModelByType(type);
+    document.querySelectorAll('.object-card').forEach(el => el.classList.remove('active')); event.currentTarget.classList.add('active');
+}
+
+// 左侧画布控制：仅控制图案大小
+document.getElementById('slider-scale').addEventListener('input', (e) => { 
+    const val = parseFloat(e.target.value);
+    window.stage3D.setPatternScale(val); 
+    document.getElementById('val-scale').innerText = val.toFixed(1); 
+});
+
+// 右侧立体印章控制：仅控制3D实体大小
+document.getElementById('slider-stamp-size').addEventListener('input', (e) => { 
+    const val = parseFloat(e.target.value);
+    window.stage3D.setStampScale(val); 
+    document.getElementById('val-stamp-size').innerText = val.toFixed(1); 
+});
+
+document.getElementById('color-picker').addEventListener('input', () => { renderStampEffects(); });
+document.getElementById('slider-threshold').addEventListener('input', (e) => { document.getElementById('val-threshold').innerText = e.target.value; renderStampEffects(); });
+document.getElementById('slider-noise').addEventListener('input', (e) => { document.getElementById('val-noise').innerText = parseFloat(e.target.value).toFixed(2); renderStampEffects(); });
+
+// 旋转拉杆
+document.getElementById('slider-rot-x').addEventListener('input', (e) => {
+    const deg = parseFloat(e.target.value);
+    window.stage3D.targetRotX = deg * Math.PI / 180;
+    document.getElementById('val-rot-x').innerText = deg;
+});
+
+document.getElementById('slider-rot-y').addEventListener('input', (e) => {
+    const deg = parseFloat(e.target.value);
+    window.stage3D.targetRotY = deg * Math.PI / 180;
+    document.getElementById('val-rot-y').innerText = deg;
+});
+
+// 折叠面板
+document.getElementById('header-3d').addEventListener('click', () => {
+    const content = document.getElementById('content-3d');
+    const header = document.getElementById('header-3d');
+    const otherContent = document.getElementById('content-2d');
+    const otherHeader = document.getElementById('header-2d');
+    
+    content.classList.toggle('active');
+    header.classList.toggle('active');
+    
+    if (content.classList.contains('active')) {
+        otherContent.classList.remove('active');
+        otherHeader.classList.remove('active');
+    }
+});
+
+document.getElementById('header-2d').addEventListener('click', () => {
+    const content = document.getElementById('content-2d');
+    const header = document.getElementById('header-2d');
+    const otherContent = document.getElementById('content-3d');
+    const otherHeader = document.getElementById('header-3d');
+    
+    content.classList.toggle('active');
+    header.classList.toggle('active');
+    
+    if (content.classList.contains('active')) {
+        otherContent.classList.remove('active');
+        otherHeader.classList.remove('active');
+    }
+});
+
+
+document.getElementById('effect-upload').addEventListener('change', (e) => { if (e.target.files[0]) { const url = URL.createObjectURL(e.target.files[0]); const tex = new THREE.TextureLoader().load(url); tex.colorSpace = THREE.SRGBColorSpace; window.stage3D.customEffectTexture = tex; showToast("已自定义特效图"); } });
+document.getElementById('sound-upload').addEventListener('change', (e) => { if (e.target.files[0]) { const url = URL.createObjectURL(e.target.files[0]); window.stage3D.customSound = new Audio(url); showToast("已自定义音效"); } });
+document.getElementById('model-upload').addEventListener('change', (e) => { if (e.target.files[0]) { window.stage3D.loadCustomModel(e.target.files[0]); } });
+
+document.getElementById('btn-export-jpg').addEventListener('click', () => { if (!window.stage3D.originalImageData) return showToast("请先上传照片"); const link = document.createElement('a'); link.download = 'stamped_photo.jpg'; link.href = window.stage3D.composeCanvas.toDataURL('image/jpeg', 0.95); link.click(); showToast("JPG 已导出"); });
+
+// ==========================================
+// 四、视频与 GIF 导出
+// ==========================================
+let mediaRecorder = null; let recordedChunks = []; let isRecordingVideo = false;
+const recordIndicator = document.getElementById('recording-indicator');
+
+document.getElementById('btn-record-video').addEventListener('click', function() {
+    if (!window.stage3D || !window.stage3D.originalImageData) return showToast("请先上传照片");
+    if (!isRecordingVideo) {
+        try {
+            const rect = window.stage3D.getPhotoScreenRect(); if(!rect) return showToast("请先上传照片");
+            const scale = Math.min(1, 1280 / rect.width); const outW = Math.floor(rect.width * scale); const outH = Math.floor(rect.height * scale);
+            const webmCanvas = document.createElement('canvas'); webmCanvas.width = outW; webmCanvas.height = outH;
+            const wctx = webmCanvas.getContext('2d'); const glCanvas = window.stage3D.renderer.domElement;
+            const captureLoop = () => { if (!isRecordingVideo) return; wctx.drawImage(glCanvas, rect.x, rect.y, rect.width, rect.height, 0, 0, outW, outH); requestAnimationFrame(captureLoop); };
+            requestAnimationFrame(captureLoop);
+            const stream = webmCanvas.captureStream(60); let options = { mimeType: 'video/webm;codecs=vp9' };
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) options = { mimeType: 'video/webm' };
+            mediaRecorder = new MediaRecorder(stream, options); recordedChunks = [];
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' }); const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'stamp_video.webm'; a.click(); URL.revokeObjectURL(url);
+                showToast('视频已保存！'); recordIndicator.classList.remove('show'); isRecordingVideo = false; 
+            };
+            mediaRecorder.start(); isRecordingVideo = true; recordIndicator.classList.add('show');
+        } catch (e) { alert('浏览器不支持视频录制'); }
+    } else { if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop(); }
+});
+recordIndicator.addEventListener('click', () => { if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop(); });
+
+let isRecordingGif = false;
+async function fetchWorkerBlob() {
+    const urls = ['https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.worker.js', 'https://unpkg.com/gif.js@0.2.0/dist/gif.worker.js'];
+    for (const url of urls) {
+        try { const res = await fetch(url, { mode: 'cors' }); if (!res.ok) continue; const blob = await res.blob(); return URL.createObjectURL(blob); } catch (e) {}
+    }
+    return null;
+}
+
+document.getElementById('btn-record-gif').addEventListener('click', async function() {
+    if (isRecordingGif) return;
+    if (!window.stage3D || !window.stage3D.originalImageData) return showToast('请先上传照片');
+    
+    isRecordingGif = true; 
+    showToast('正在加载编码器...');
+    
+    const workerScript = await fetchWorkerBlob();
+    
+    const overlay = document.getElementById('countdown-overlay');
+    const countdownText = document.getElementById('countdown-text');
+    overlay.classList.add('show');
+    let count = 3; countdownText.innerText = count;
+    
+    const timer = setInterval(() => {
+        count--;
+        if (count > 0) { countdownText.innerText = count; } 
+        else { 
+            clearInterval(timer); 
+            overlay.classList.remove('show'); 
+            startGifRecording(workerScript); 
+        }
+    }, 800);
+});
+
+async function startGifRecording(workerScript) {
+    const statusDiv = document.getElementById('record-status');
+    statusDiv.style.display = 'block';
+    statusDiv.innerText = 'GIF 正在极速录制中...';
+
+    const glCanvas = window.stage3D.renderer.domElement;
+    const photoRect = window.stage3D.getPhotoScreenRect();
+    if (!photoRect) { isRecordingGif = false; statusDiv.style.display = 'none'; return; }
+
+    const ratio = photoRect.height / photoRect.width;
+    const gifW = 320; const gifH = Math.round(gifW * ratio);
+
+    let gifOptions = { quality: 10, width: gifW, height: gifH, dither: false };
+    if (workerScript) {
+        gifOptions.workers = 2;
+        gifOptions.workerScript = workerScript;
+    } else {
+        gifOptions.workers = 0; 
+        showToast('网络较慢，使用后备模式生成...');
+    }
+    
+    const gif = new GIF(gifOptions);
+    
+    gif.on('abort', () => {
+        showToast('GIF 生成中断，请重试');
+        isRecordingGif = false;
+        statusDiv.style.display = 'none';
+    });
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = gifW; tempCanvas.height = gifH;
+    const tctx = tempCanvas.getContext('2d');
+
+    const historyBackup = [...window.stage3D.stampsHistory];
+    window.stage3D.stampsHistory = []; window.stage3D.redrawCanvas();
+    window.stage3D.stampGroup.visible = false;
+
+    const playList = historyBackup.length > 0 ? historyBackup : [{ isCenter: true }];
+    let frames = 0; const fps = 10; const interval = 1000 / fps;
+    const framesPerStamp = 12; const tailFrames = 15;
+    const maxFrames = (playList.length * framesPerStamp) + tailFrames;
+    let stampIndex = 0;
+
+    const recordInterval = setInterval(() => {
+        tctx.drawImage(glCanvas, photoRect.x, photoRect.y, photoRect.width, photoRect.height, 0, 0, gifW, gifH);
+        gif.addFrame(tctx, { copy: true, delay: interval });
+        
+        if (frames === (stampIndex * framesPerStamp + 3) && stampIndex < playList.length) {
+            const s = playList[stampIndex];
+            if (s.isCenter) { window.stage3D.pressStamp(true, new THREE.Vector2(0.5, 0.5)); } 
+            else {
+                const uvX = s.x / window.stage3D.composeCanvas.width;
+                const uvY = 1 - (s.y / window.stage3D.composeCanvas.height);
+                window.stage3D.pressStamp(true, new THREE.Vector2(uvX, uvY), s);
+            }
+            stampIndex++;
+        }
+        frames++;
+        statusDiv.innerText = `GIF 录制中... ${frames} / ${maxFrames} 帧`;
+        
+        if (frames >= maxFrames) {
+            clearInterval(recordInterval);
+            statusDiv.innerText = '正在极速编码保存...';
+            gif.render();
+        }
+    }, interval);
+
+    gif.on('finished', (blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'stamp_animation.gif'; a.click();
+        showToast('GIF 已保存！'); isRecordingGif = false; statusDiv.style.display = 'none';
+        setTimeout(() => { URL.revokeObjectURL(url); }, 3000);
+    });
+}
+</script>
+</body>
+</html>
