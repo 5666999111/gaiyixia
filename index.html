@@ -796,15 +796,12 @@ class Stage3D {
         this.camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
         this.camera.position.set(0, 0, 10);
 
-        // 👇👇👇 就是把这三行新增的解压器代码加在这里 👇👇👇
+                // 配置 Draco 解压器
         this.dracoLoader = new DRACOLoader();
         this.dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/');
         this.dracoLoader.preload();
-        // 👆👆👆 加在这里 👆👆👆
 
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-        // ... 后面的代码保持原样不用动 ...
-
+        // 真正的渲染器初始化（只保留这一处）
         this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
         this.renderer.setSize(container.clientWidth, container.clientHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
