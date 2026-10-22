@@ -515,6 +515,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 window.showToast = function(msg) {
     const t = document.getElementById('toast');
@@ -795,6 +796,15 @@ class Stage3D {
         this.camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
         this.camera.position.set(0, 0, 10);
 
+        // 👇👇👇 就是把这三行新增的解压器代码加在这里 👇👇👇
+        this.dracoLoader = new DRACOLoader();
+        this.dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/');
+        this.dracoLoader.preload();
+        // 👆👆👆 加在这里 👆👆👆
+
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+        // ... 后面的代码保持原样不用动 ...
+
         this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
         this.renderer.setSize(container.clientWidth, container.clientHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -893,6 +903,7 @@ class Stage3D {
 
     loadCustomModel(file) {
         const url = URL.createObjectURL(file); const loader = new GLTFLoader();
+        loader.setDRACOLoader(this.dracoLoader);
         loader.load(url, (gltf) => {
             this.stampInner.clear(); const model = gltf.scene;
             const box = new THREE.Box3().setFromObject(model); const center = box.getCenter(new THREE.Vector3()); const size = box.getSize(new THREE.Vector3());
@@ -949,6 +960,7 @@ class Stage3D {
         if (!url) return;
 
         const loader = new GLTFLoader();
+        loader.setDRACOLoader(this.dracoLoader);
         loader.load(url, (gltf) => {
             this.stampInner.clear();
             const model = gltf.scene;
