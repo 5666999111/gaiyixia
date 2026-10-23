@@ -605,23 +605,32 @@ document.getElementById('policy-modal').addEventListener('click', (e) => {
 
 
 // ==========================================
-// 计数器逻辑 (纯本地版，永不报错)
+// 新增：计数器逻辑 (云端全网同步版)
 // ==========================================
 const BASE_COUNT = 100;
 let currentCount = BASE_COUNT;
 
-// 初始化：从本地读取数据
-const savedCount = localStorage.getItem('stampCount');
-if (savedCount) {
-    currentCount = parseInt(savedCount);
-}
-document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
+// 初始化：从云端读取全网数据
+fetch('https://api.counterapi.dev/v1/gaiyixia2026/stamps')
+    .then(res => res.json())
+    .then(data => {
+        // 如果云端有数据，就加上基准的 100
+        currentCount = BASE_COUNT + (data.count || 0);
+        document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
+    })
+    .catch(e => {
+        // 如果网络不好，至少显示基准的 100
+        document.getElementById('stamp-counter').innerText = `已累计诞生 ${BASE_COUNT.toLocaleString()} 枚印章`;
+    });
 
 // 触发计数事件：点击“确认印章”时调用
 function addCount() {
     currentCount++;
-    localStorage.setItem('stampCount', currentCount);
     document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
+    
+    // 告诉云端，数字加 1
+    fetch('https://api.counterapi.dev/v1/gaiyixia2026/stamps/up')
+        .catch(e => console.log('网络问题，云端未同步', e));
 }
 
 
