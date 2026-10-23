@@ -607,31 +607,70 @@ document.getElementById('policy-modal').addEventListener('click', (e) => {
 // ==========================================
 // 新增：计数器逻辑 (云端全网同步版)
 // ==========================================
-const BASE_COUNT = 100;
-let currentCount = BASE_COUNT;
+// ==========================================
+// 终极完美版计数器 (Abacus接口 + 本地双重保险)
+// ==========================================
+const BASE_COUNT = 100; 
+const API_NS = "gaiyixia_app"; // 专属命名空间，防止和别人冲突
+const API_KEY = "stamp_clicks";
 
-// 初始化：从云端读取全网数据
-fetch('https://api.counterapi.dev/v1/gaiyixia2026/stamps')
-    .then(res => res.json())
-    .then(data => {
-        // 如果云端有数据，就加上基准的 100
-        currentCount = BASE_COUNT + (data.count || 0);
-        document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
-    })
-    .catch(e => {
-        // 如果网络不好，至少显示基准的 100
-        document.getElementById('stamp-counter').innerText = `已累计诞生 ${BASE_COUNT.toLocaleString()} 枚印章`;
-    });
+// 页面加载时执行
+async function loadCounter() {
+    let finalCount = BASE_COUNT; // 默认基础数
 
-// 触发计数事件：点击“确认印章”时调用
-function addCount() {
-    currentCount++;
-    document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
-    
-    // 告诉云端，数字加 1
-    fetch('https://api.counterapi.dev/v1/gaiyixia2026/stamps/up')
-        .catch(e => console.log('网络问题，云端未同步', e));
+    // 1. 先看本地有没有缓存（防止断网或接口挂了）
+    const localCount = localStorage.getItem('myStampCount');
+    if (localCount) {
+        finalCount = parseInt(localCount);
+    }
+
+    // 2. 去云端获取全网最新数据
+    try {
+        const res = await fetch(`https://abacus.jasoncameron.dev/get/${API_NS}/${API_KEY}`);
+        if (res.ok) {
+            const data = await res.json();
+            // 云端数字 = 基础数 100 + 云端记录的点按数
+            let cloudTotal = BASE_COUNT + data.value;
+            
+            // 如果云端数字比本地大，就用云端的
+            if (cloudTotal > finalCount) {
+                finalCount = cloudTotal;
+                localStorage.setItem('myStampCount', finalCount);
+            }
+        }
+    } catch (e) {
+        console.log("网络不佳，使用本地记录");
+    }
+
+    // 更新页面显示
+    document.getElementById('stamp-counter').innerText = `已累计诞生 ${finalCount.toLocaleString()} 枚印章`;
 }
+
+// 点击确认印章时触发
+async function addCount() {
+    // 1. 先在本地 +1 并保存（确保即使断网，用户也能看到数字变化）
+    let localCount = parseInt(localStorage.getItem('myStampCount') || BASE_COUNT);
+    localCount++;
+    localStorage.setItem('myStampCount', localCount);
+    document.getElementById('stamp-counter').innerText = `已累计诞生 ${localCount.toLocaleString()} 枚印章`;
+
+    // 2. 再通知云端 +1
+    try {
+        const res = await fetch(`https://abacus.jasoncameron.dev/hit/${API_NS}/${API_KEY}`);
+        if (res.ok) {
+            const data = await res.json();
+            let cloudTotal = BASE_COUNT + data.value;
+            // 同步云端最新数字
+            document.getElementById('stamp-counter').innerText = `已累计诞生 ${cloudTotal.toLocaleString()} 枚印章`;
+            localStorage.setItem('myStampCount', cloudTotal);
+        }
+    } catch (e) {
+        console.warn("网络不佳，计数未同步到云端，但已保存在本地");
+    }
+}
+
+// 初始化调用
+loadCounter();
 
 
 // ==========================================
