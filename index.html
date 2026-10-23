@@ -125,13 +125,14 @@
         .accordion-header:hover { filter: brightness(1.1); }
         .accordion-header.active { background: var(--cream); color: var(--ink); }
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .accordion-content.active { max-height: 850px; transition: max-height 0.3s ease-in; padding-top: 12px; }
+        .accordion-content.active { max-height: 1200px; transition: max-height 0.3s ease-in; padding-top: 12px; }
 
         .shelf-title { align-items: center; display: flex; gap: 9px; margin: 14px 0 10px; }
         .shelf-title span { font-size: 10px; font-weight: 800; letter-spacing: .1em; white-space: nowrap; }
         .shelf-title i { border-top: 1px dashed #b9b5a8; width: 100%; }
         
         .object-grid, .preset-grid { display: grid; gap: 8px; grid-template-columns: repeat(2, 1fr); }
+
         .object-card, .preset-card { background: #f4f0e4; border: 1.5px solid transparent; min-width: 0; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
         .object-card.active, .preset-card.active { background: var(--cream-light); border-color: var(--ink); }
         .object-card b { display: block; font-size: 10px; margin-top: 6px; }
@@ -174,7 +175,7 @@
         .workspace-hint { align-items: center; background: var(--cream); border: 1.5px solid var(--ink); bottom: 18px; display: flex; font-size: 9px; gap: 8px; left: 50%; padding: 8px 12px; position: absolute; transform: translateX(-50%); z-index: 2; pointer-events: none; }
         .workspace-hint span { display: flex; gap: 7px; white-space: nowrap; }
 
-        /* ==== 新增：3D加载动画样式 ==== */
+        /* ==== 3D加载动画样式 ==== */
         #model-loading {
             display: none; position: absolute; inset: 0; background: rgba(34, 35, 31, 0.7); 
             z-index: 99; flex-direction: column; justify-content: center; align-items: center; 
@@ -186,7 +187,7 @@
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* ==== 新增页脚样式 ==== */
+        /* ==== 页脚样式 ==== */
         footer { 
             align-items: center; 
             background: var(--cream); 
@@ -205,7 +206,7 @@
             flex-direction: column;
             align-items: center;
             gap: 6px;
-            transform: translateX(50px); /* 控制居中位置 */
+            transform: translateX(50px); 
         }
         .footer-center p { font-family: "Noto Serif SC", serif; font-size: 14px; font-weight: 700; margin: 0;}
         .footer-links { display: flex; gap: 8px; font-size: 11px; color: var(--muted); font-weight: 500;}
@@ -413,10 +414,10 @@
                     </button>
                     <div class="accordion-content" id="content-3d">
                         <div class="object-grid">
+                            <button class="object-card active" onclick="loadPreset3DModel('classic')"><span class="stamp-object classic"><i>印</i></span><b>普通章</b></button>
                             <button class="object-card" onclick="loadPreset3DModel('jade')"><span class="stamp-object jade"><i>篆</i></span><b>玉印</b></button>
                             <button class="object-card" onclick="loadPreset3DModel('plum')"><span class="stamp-object plum"><i>梅</i></span><b>梅花</b></button>
                             <button class="object-card" onclick="loadPreset3DModel('cat')"><span class="stamp-object cat"><i>猫</i></span><b>小猫</b></button>
-                            <button class="object-card active" onclick="loadPreset3DModel('classic')"><span class="stamp-object classic"><i>印</i></span><b>普通章</b></button>
                         </div>
                         <div class="rotation-controls">
                             <div class="rotation-slider-group">
@@ -441,10 +442,13 @@
                     </button>
                     <div class="accordion-content active" id="content-2d">
                         <div class="preset-grid">
-                            <button class="preset-card active" onclick="loadPresetStamp('yiyue')"><span class="seal-square">已阅</span><small>已阅</small></button>
-                            <button class="preset-card" onclick="loadPresetStamp('bang')"><span class="seal-round">棒</span><small>棒</small></button>
-                            <button class="preset-card" onclick="loadPresetStamp('100')"><span class="seal-burst">100分</span><small>100分</small></button>
-                            <button class="preset-card" onclick="loadPresetStamp('good')"><span class="seal-wide">好事发生</span><small>好事发生</small></button>
+                            <!-- 只保留自定义图片图案 -->
+                            <button class="preset-card active" onclick="loadPatternImage('./pattern1.png', this)"><img src="./pattern1.png" onerror="this.style.display='none'"><small>图案1</small></button>
+                            <button class="preset-card" onclick="loadPatternImage('./pattern2.png', this)"><img src="./pattern2.png" onerror="this.style.display='none'"><small>图案2</small></button>
+                            <button class="preset-card" onclick="loadPatternImage('./pattern3.png', this)"><img src="./pattern3.png" onerror="this.style.display='none'"><small>图案3</small></button>
+                            <button class="preset-card" onclick="loadPatternImage('./pattern4.png', this)"><img src="./pattern4.png" onerror="this.style.display='none'"><small>图案4</small></button>
+                            <button class="preset-card" onclick="loadPatternImage('./pattern5.png', this)"><img src="./pattern5.png" onerror="this.style.display='none'"><small>图案5</small></button>
+                            <button class="preset-card" onclick="loadPatternImage('./pattern6.png', this)"><img src="./pattern6.png" onerror="this.style.display='none'"><small>图案6</small></button>
                         </div>
                     </div>
                 </div>
@@ -466,7 +470,6 @@
                 <div class="canvas-meta"><span>100%</span><i></i><span>0°</span></div>
                 <div id="three-canvas-container"></div>
                 
-                <!-- 新增：3D模型加载动画 -->
                 <div id="model-loading">
                     <div class="loading-spinner"></div>
                     <div style="font-size: 12px; font-weight: bold; letter-spacing: 1px;">印章正在赶来的路上...</div>
@@ -530,6 +533,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 window.showToast = function(msg) {
     const t = document.getElementById('toast');
@@ -553,7 +557,7 @@ window.addEventListener('scroll', () => {
 });
 
 // ==========================================
-// 新增：弹窗逻辑
+// 弹窗逻辑
 // ==========================================
 const policyData = {
     terms: {
@@ -601,28 +605,23 @@ document.getElementById('policy-modal').addEventListener('click', (e) => {
 
 
 // ==========================================
-// 新增：计数器逻辑 (从100开始)
+// 计数器逻辑 (纯本地版，永不报错)
 // ==========================================
 const BASE_COUNT = 100;
-let currentCount = 100;
+let currentCount = BASE_COUNT;
 
-// 初始化：拉取云端数据并加上基准值 (接口已替换)
-fetch('https://api.counterapi.dev/v1/ga1xia/stamps')
-    .then(res => res.json())
-    .then(data => {
-        currentCount = BASE_COUNT + (data.count || 0);
-        document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
-    })
-    .catch(e => {
-        document.getElementById('stamp-counter').innerText = `已累计诞生 ${BASE_COUNT.toLocaleString()} 枚印章`;
-    });
+// 初始化：从本地读取数据
+const savedCount = localStorage.getItem('stampCount');
+if (savedCount) {
+    currentCount = parseInt(savedCount);
+}
+document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
 
 // 触发计数事件：点击“确认印章”时调用
 function addCount() {
     currentCount++;
+    localStorage.setItem('stampCount', currentCount);
     document.getElementById('stamp-counter').innerText = `已累计诞生 ${currentCount.toLocaleString()} 枚印章`;
-    
-    fetch('https://api.counterapi.dev/v1/ga1xia/stamps/up').catch(e => console.log('网络问题，云端未同步', e));
 }
 
 
@@ -772,10 +771,10 @@ document.getElementById('btn-reset-draw').addEventListener('click', () => {
     window.stage3D.customSound = null;
     document.getElementById('sound-upload').value = '';
     
-    // 恢复默认3D模型为普通章
+    // 恢复默认3D模型为普通章 (已放到第一个)
     window.stage3D.loadPresetModelByType('classic');
     document.querySelectorAll('.object-card').forEach(el => el.classList.remove('active'));
-    const classicCard = document.querySelectorAll('.object-card')[3];
+    const classicCard = document.querySelectorAll('.object-card')[0];
     if(classicCard) classicCard.classList.add('active');
 
     window.stage3D.resetRotationSliders();
@@ -791,6 +790,7 @@ document.getElementById('btn-reset-draw').addEventListener('click', () => {
     showToast("已恢复默认");
 });
 
+// 加载预设文字印章 (保留函数防止报错，虽然UI里没按钮了)
 window.loadPresetStamp = function(type) {
     octx.globalCompositeOperation = 'source-over'; 
     octx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
@@ -801,7 +801,33 @@ window.loadPresetStamp = function(type) {
     else if (type === 'good') { octx.lineWidth = 8; octx.beginPath(); octx.moveTo(100, 250); octx.lineTo(380, 250); octx.stroke(); octx.font = "700 60px serif"; octx.fillText("好事发生", 240, 180); }
     renderStampEffects(); saveHistory();
     document.querySelectorAll('.preset-card').forEach(el => el.classList.remove('active'));
-    event.currentTarget.classList.add('active'); showToast("已载入图案");
+    if(event) event.currentTarget.classList.add('active'); 
+    showToast("已载入图案");
+}
+
+// 加载本地图片图案
+window.loadPatternImage = function(url, element) {
+    const img = new Image();
+    img.onload = () => {
+        octx.globalCompositeOperation = 'source-over';
+        octx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+        
+        // 自动缩放并居中图片
+        const scale = Math.min(offscreenCanvas.width / img.width, offscreenCanvas.height / img.height) * 0.8;
+        const drawW = img.width * scale;
+        const drawH = img.height * scale;
+        octx.drawImage(img, (offscreenCanvas.width - drawW) / 2, (offscreenCanvas.height - drawH) / 2, drawW, drawH);
+        
+        renderStampEffects(); saveHistory();
+        
+        document.querySelectorAll('.preset-card').forEach(el => el.classList.remove('active'));
+        if(element) element.classList.add('active');
+        showToast("已载入自定义图案");
+    };
+    img.onerror = () => {
+        showToast("未找到该图片文件，请检查命名是否正确");
+    };
+    img.src = url;
 }
 
 initDrawCanvas();
@@ -820,6 +846,7 @@ class Stage3D {
         this.dracoLoader = new DRACOLoader();
         this.dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.5/');
         this.dracoLoader.preload();
+        this.meshoptDecoder = MeshoptDecoder;
 
         this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
         this.renderer.setSize(container.clientWidth, container.clientHeight);
@@ -918,9 +945,10 @@ class Stage3D {
     }
 
     loadCustomModel(file) {
-        document.getElementById('model-loading').style.display = 'flex'; // 显示加载动画
+        document.getElementById('model-loading').style.display = 'flex'; 
         const url = URL.createObjectURL(file); const loader = new GLTFLoader();
         loader.setDRACOLoader(this.dracoLoader);
+        loader.setMeshoptDecoder(this.meshoptDecoder);
         loader.load(url, (gltf) => {
             this.stampInner.clear(); const model = gltf.scene;
             const box = new THREE.Box3().setFromObject(model); const center = box.getCenter(new THREE.Vector3()); const size = box.getSize(new THREE.Vector3());
@@ -938,10 +966,10 @@ class Stage3D {
             this.stampGroup.rotation.x = this.baseRotationX;
             this.resetRotationSliders();
             
-            document.getElementById('model-loading').style.display = 'none'; // 隐藏加载动画
+            document.getElementById('model-loading').style.display = 'none';
             showToast("3D 模型加载成功");
         }, undefined, (error) => { 
-            document.getElementById('model-loading').style.display = 'none'; // 隐藏加载动画
+            document.getElementById('model-loading').style.display = 'none';
             alert('模型加载失败'); 
         });
     }
@@ -980,10 +1008,11 @@ class Stage3D {
         const url = modelMap[type];
         if (!url) return;
 
-        document.getElementById('model-loading').style.display = 'flex'; // 显示加载动画
+        document.getElementById('model-loading').style.display = 'flex';
 
         const loader = new GLTFLoader();
         loader.setDRACOLoader(this.dracoLoader);
+        loader.setMeshoptDecoder(this.meshoptDecoder);
         loader.load(url, (gltf) => {
             this.stampInner.clear();
             const model = gltf.scene;
@@ -1013,11 +1042,11 @@ class Stage3D {
             this.baseRotationX = 0; 
             this.stampGroup.rotation.x = this.baseRotationX;
             
-            document.getElementById('model-loading').style.display = 'none'; // 隐藏加载动画
+            document.getElementById('model-loading').style.display = 'none';
             showToast("已加载 " + (type === 'jade' ? '玉印' : type === 'plum' ? '梅花' : '小猫') + " 模型");
         }, undefined, (error) => { 
             console.error(error); 
-            document.getElementById('model-loading').style.display = 'none'; // 隐藏加载动画
+            document.getElementById('model-loading').style.display = 'none';
             alert('模型加载失败，请检查文件名。'); 
         });
     }
